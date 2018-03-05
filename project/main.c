@@ -8,36 +8,26 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "can.h"
-#include "uart1.h"
+#include "uart.h"
+#include "can_uart.h"
 
 CanMessage_t rxFrame;
+CanMessage_t txFrame;
 void transmit_can_to_serial(CanMessage_t *dataFrame);
 
 int main(void)
 {	
-	uart_init();
 	can_init(0,0);
-	fdevopen(uart_tx_char,NULL);
-	
+	can_uart_init(UART0_USB);
 	sei();
 	
     while (1) 
     {
 		if (can_read_message_if_new(&rxFrame))
 		{
-			transmit_can_to_serial(&rxFrame);
+			can_to_uart(&rxFrame);
 		}
+		uart_to_can_if_new(&txFrame);
     }
 }
 
-void transmit_can_to_serial(CanMessage_t *dataFrame)
-{
-	printf("[%03X:%d:", dataFrame->id,dataFrame->length);
-	
-	for(int i = 0; i < dataFrame->length; i++)
-	{
-		printf("%02X", dataFrame->data.u8[i]);
-	}
-	
-	printf("]\n");
-}
