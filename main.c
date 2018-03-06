@@ -17,7 +17,7 @@ CanMessage_t txFrame;
 int main(void)
 {	
 	can_init(0,0);
-	uart_init(BAUD_500000,BAUD_500000);
+	uart_init(DISABLED,BAUD_500000);
 	can_uart_init(UART1_HEADER);
 	sei();
 	
