@@ -13,16 +13,16 @@
 
 CanMessage_t rxFrame;
 CanMessage_t txFrame;
-void transmit_can_to_serial(CanMessage_t *dataFrame);
 
 int main(void)
 {	
 	can_init(0,0);
-	can_uart_init(UART0_USB);
+	uart_init(BAUD_500000,BAUD_500000);
+	can_uart_init(UART1_HEADER);
 	sei();
 	
     while (1) 
-    {
+    {	
 		if (can_read_message_if_new(&rxFrame))
 		{
 			can_to_uart(&rxFrame);

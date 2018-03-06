@@ -14,32 +14,27 @@
 #define CAN_TX_BUFFER_MASK (CAN_TX_BUFFER_SIZE-1)
 #define CAN_RX_BUFFER_MASK (CAN_RX_BUFFER_SIZE-1)
 
-static volatile unsigned char CAN_TX_BUFFER[CAN_TX_BUFFER_SIZE];
-static volatile unsigned char CAN_RX_BUFFER[CAN_RX_BUFFER_SIZE];
+static unsigned char CAN_TX_BUFFER[CAN_TX_BUFFER_SIZE];
+static unsigned char CAN_RX_BUFFER[CAN_RX_BUFFER_SIZE];
 static volatile uint8_t tx_head;
 static volatile uint8_t tx_tail;
 static volatile uint8_t new_can_from_uart;
+static volatile uart_channel_t mode;
 
 uint8_t ascii_to_dec(char c);
 
 void can_uart_init(uart_channel_t channel)
 {
-	switch (channel)
-	{
-	case 0:
-		uart0_init(BAUD_500000);
-	default:
-		break;
-	}
+	mode = channel;
 }
 
 int uart_to_can_if_new(CanMessage_t * txFrame)
 {
 	uint8_t tmphead;
 	
-	while (uart0_has_new_message())
+	while (uart_has_new_message(mode))
 	{
-		unsigned char data = uart0_receive();
+		unsigned char data = uart_receive(mode);
 		
 		if (data == '\n')
 		{
@@ -123,7 +118,7 @@ void can_to_uart(CanMessage_t * rxFrame)
 		index += sprintf(&CAN_RX_BUFFER[index], "%02X", rxFrame->data.u8[byte]);
 	}
 	sprintf(&CAN_RX_BUFFER[index],"]\n");
-	uart0_transmit_str(CAN_RX_BUFFER);
+	uart_transmit_str(mode,CAN_RX_BUFFER);
 }
 
 

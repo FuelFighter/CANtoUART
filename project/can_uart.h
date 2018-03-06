@@ -12,12 +12,6 @@
 #include "can.h"
 #include "uart.h"
 
-typedef enum 
-{
-	UART0_USB = 0,
-	UART1_HEADER = 1
-} uart_channel_t;
-
 void can_uart_init(uart_channel_t channel);
 int uart_to_can_if_new(CanMessage_t * txFrame);
 void can_to_uart(CanMessage_t * rxFrame);
